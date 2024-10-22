@@ -21,7 +21,7 @@
   </head>
   <body>
     <div class="container">
-      <h1 class="text-center">Gold Price - Profit / Loss</h1>
+      <h1 class="text-center">Gold Prices and Profits</h1>
 
       <div class="chart-container">
         <canvas id="priceChart"></canvas>
@@ -125,6 +125,18 @@
         },
       };
 
+      const getProfitLossColors = (data) => {
+        return data.map((value) =>
+          value > 0 ? "rgba(75, 192, 192, 0.6)" : "rgba(255, 99, 132, 0.6)"
+        );
+      };
+
+      const getCumulativeProfitLossColors = (data) => {
+        return data.map((value) =>
+          value > 0 ? "rgba(54, 162, 235, 0.6)" : "rgba(255, 99, 132, 0.6)"
+        );
+      };
+
       const profitLossChartConfig = {
         type: "bar",
         data: {
@@ -133,7 +145,7 @@
             {
               label: "Profit/Loss (%)",
               data: profitLoss,
-              backgroundColor: "rgb(255, 99, 132)",
+              backgroundColor: getProfitLossColors(profitLoss),
             },
           ],
         },
@@ -158,7 +170,8 @@
             {
               label: "Cumulative Profit/Loss (%)",
               data: cumulativeProfitLoss,
-              backgroundColor: "rgb(54, 162, 235)",
+              backgroundColor:
+                getCumulativeProfitLossColors(cumulativeProfitLoss),
             },
           ],
         },
