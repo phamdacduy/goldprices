@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Investment Comparison</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container my-4">
+      <h2 class="text-center">
+        Investment Comparison: Gold vs. Bank Savings (Vietnam 2003-2024)
+      </h2>
+      <canvas id="priceChart" class="my-4"></canvas>
+      <canvas id="profitLossChart" class="my-4"></canvas>
+      <canvas id="cumulativeProfitLossChart" class="my-4"></canvas>
+      <canvas id="investmentComparisonChart" class="my-4"></canvas>
+    </div>
+
+    <script>
+      const years = [
+        2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,
+        2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+      ];
+
+      const goldPrices = [
+        363.3, 409.2, 444.5, 603.8, 695.4, 872.0, 972.4, 1224.5, 1571.5, 1669.0,
+        1411.2, 1266.4, 1160.1, 1250.8, 1257.2, 1268.5, 1392.6, 1769.6, 1798.6,
+        1800.1, 1927.99, 2740.0,
+      ];
+
+      const bankInterestRates = [
+        7.0, 6.5, 6.0, 6.5, 6.8, 6.8, 6.5, 6.0, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5,
+        5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.8, 5.0,
+      ];
+
+      const initialInvestment = 1000;
+      let goldInvestment = initialInvestment;
+      let bankInvestment = initialInvestment;
+      let cumulativeGoldReturns = [initialInvestment];
+      let cumulativeBankReturns = [initialInvestment];
+
+      for (let i = 1; i < years.length; i++) {
+        const goldReturn = goldPrices[i] / goldPrices[i - 1] - 1;
+        goldInvestment *= 1 + goldReturn;
+        cumulativeGoldReturns.push(goldInvestment);
+
+        const bankReturn = bankInterestRates[i - 1] / 100;
+        bankInvestment *= 1 + bankReturn;
+        cumulativeBankReturns.push(bankInvestment);
+      }
+
+      const ctx1 = document.getElementById("priceChart").getContext("2d");
+      const priceChart = new Chart(ctx1, {
+        type: "line",
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: "Gold Price (USD)",
+              data: goldPrices,
+              borderColor: "blue",
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Gold Prices by Year (2003-2024)",
+            },
+          },
+        },
+      });
+
+      const profitLossData = goldPrices.slice(1).map((price, index) => {
+        const profit = price - goldPrices[index];
+        return profit;
+      });
+
+      const ctx2 = document.getElementById("profitLossChart").getContext("2d");
+      const profitLossChart = new Chart(ctx2, {
+        type: "bar",
+        data: {
+          labels: years.slice(1),
+          datasets: [
+            {
+              label: "Profit/Loss (USD)",
+              data: profitLossData,
+              backgroundColor: profitLossData.map((profit) =>
+                profit > 0 ? "rgba(0, 128, 0, 0.7)" : "rgba(255, 0, 0, 0.7)"
+              ),
+              borderColor: profitLossData.map((profit) =>
+                profit > 0 ? "green" : "red"
+              ),
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Annual Profit/Loss from Gold Investment (2003-2024)",
+            },
+          },
+        },
+      });
+
+      const ctx3 = document
+        .getElementById("cumulativeProfitLossChart")
+        .getContext("2d");
+      const cumulativeProfitLossChart = new Chart(ctx3, {
+        type: "line",
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: "Cumulative Profit/Loss (USD)",
+              data: cumulativeGoldReturns.map(
+                (value, index) => value - initialInvestment
+              ),
+              borderColor: "purple",
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Cumulative Profit/Loss from Gold Investment (2003-2024)",
+            },
+          },
+        },
+      });
+
+      const ctx4 = document
+        .getElementById("investmentComparisonChart")
+        .getContext("2d");
+      const investmentComparisonChart = new Chart(ctx4, {
+        type: "line",
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: "Cumulative Returns from Gold Investment (USD)",
+              data: cumulativeGoldReturns,
+              borderColor: "gold",
+              fill: false,
+            },
+            {
+              label: "Cumulative Returns from Bank Savings (USD)",
+              data: cumulativeBankReturns,
+              borderColor: "green",
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Investment Comparison: Gold vs. Bank Savings (2003-2024)",
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
